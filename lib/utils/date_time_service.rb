@@ -4,7 +4,7 @@ class DateTimeService
   class << self
     include InitialData
 
-    def add_date_hours_minutes(date, hours_minutes)
+    def set_hours_minutes(date, hours_minutes)
       date.to_datetime +
         time_fraction(hours_minutes[:hours], HOUR_IN_DAY) +
         time_fraction(hours_minutes[:minutes], MIN_IN_DAY)

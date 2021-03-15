@@ -7,22 +7,7 @@ class AppointmentsService
     def find_free_timeslots
       @find_free_timeslots ||= {}.tap do |ha|
         appointment_time_ranges.each do |k, v|
-          ha[k] = v.reject do |free_timeslot|
-            booked_t = booked_timeslots
-            booked = [].tap do |arr|
-              booked_t.each_index do |index|
-                arr.push(booked_t.dig(index, k))
-              end
-            end.compact.flatten
-
-            # TODO: Get rid of the DAY_END times (the last appointment should come just before the DAY_END time)
-            #  example: DAY_END = 18:00, the last appointment should be 17:30, if interval is 30 minutes
-
-            # TODO: Format the output right here
-            #   if the timeslot gets rejected, that should be the last :from element
-            #   and loop should add a new block time from the next element in succession
-            any_blocked?(booked, free_timeslot)
-          end
+          ha[k] = selected_timeslots(v, k)
         end
       end
     end
@@ -43,8 +28,8 @@ class AppointmentsService
     def perpetual_timeslots
       {}.tap do |ha|
         search_dates.each do |date|
-          from = DateTimeService.add_date_hours_minutes(date, lunch_start)
-          to = DateTimeService.add_date_hours_minutes(date, lunch_end)
+          from = DateTimeService.set_hours_minutes(date, lunch_start)
+          to = DateTimeService.set_hours_minutes(date, lunch_end)
           ha[date] = { from: from, to: to }
         end
       end
@@ -53,8 +38,8 @@ class AppointmentsService
     def appointment_time_ranges
       @appointment_time_ranges ||= {}.tap do |ha|
         search_dates.each do |date|
-          from = DateTimeService.add_date_hours_minutes(date, day_start)
-          to = DateTimeService.add_date_hours_minutes(date, day_end)
+          from = DateTimeService.set_hours_minutes(date, day_start)
+          to = DateTimeService.set_hours_minutes(date, day_end)
           ha[date] = DateTimeService.set_date_intervals(from, to, INTERVAL, MIN_IN_DAY)
         end
       end
@@ -62,12 +47,34 @@ class AppointmentsService
 
     private
 
-    # timeslot is blocked if it is covered by the booked appointment range
-    # or if combined length of free time slot and interval (in minutes) covers the booked datetime
+    # timeslot is blocked if
+    #   it is covered by the booked appointment range OR
+    #   range between timeslot and interval_addition (in minutes) covers the booked timeslot OR
+    #   range between timeslot and interval_addition (in minutes) covers the time when work-day ends
     def any_blocked?(booked_appointments, free_timeslot)
-      booked_appointments.any? do |booked_datetime|
-        (booked_datetime[:from]...booked_datetime[:to]).cover?(free_timeslot) ||
-          (free_timeslot...(free_timeslot + DateTimeService.time_fraction(INTERVAL, MIN_IN_DAY))).cover?(booked_datetime[:from])
+      interval = DateTimeService.time_fraction(INTERVAL, MIN_IN_DAY)
+      booked_appointments.any? do |booked_timeslot|
+        booked_timeslot_range = booked_timeslot[:from]...booked_timeslot[:to]
+        interval_addition_range = free_timeslot...(free_timeslot + interval)
+        day_ends = DateTimeService.set_hours_minutes(free_timeslot.to_date, day_end)
+
+        booked_timeslot_range.cover?(free_timeslot) ||
+          interval_addition_range.cover?(booked_timeslot[:from]) ||
+          interval_addition_range.cover?(day_ends)
+      end
+    end
+
+    def booked_values(booked_timeslots, k)
+      [].tap do |arr|
+        booked_timeslots.each_index do |index|
+          arr.push(booked_timeslots.dig(index, k))
+        end
+      end.compact.flatten
+    end
+
+    def selected_timeslots(timeslots_values, key)
+      timeslots_values.reject do |free_timeslot|
+        any_blocked?(booked_values(booked_timeslots, key), free_timeslot)
       end
     end
 
@@ -84,7 +91,7 @@ class AppointmentsService
     end
 
     def search_dates
-      @search_dates = DateTimeService.format_search_dates(SEARCH_RANGE)
+      @search_dates ||= DateTimeService.format_search_dates(SEARCH_RANGE)
     end
 
     def day_start

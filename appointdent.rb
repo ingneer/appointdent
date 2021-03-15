@@ -9,6 +9,6 @@ require './lib/utils/output_service'
 require './lib/utils/date_time_service'
 
 
-free_time_slots = AppointmentsService.find_free_timeslots
+results = AppointmentsService.find_free_timeslots
 
-
+OutputService.fine_print(results)
