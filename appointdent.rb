@@ -10,6 +10,7 @@ require './lib/utils/appointments_service'
 require './lib/utils/output_service'
 require './lib/utils/date_time_service'
 
+# TODO: Add interactive mode where user can define day start, day end, and appointment interval
 
 results = AppointmentsService.find_free_timeslots
 
