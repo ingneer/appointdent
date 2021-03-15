@@ -1,8 +1,30 @@
-# Software Engineering excercise
+# About AppointDent
+Make sense of appointments for dentists!
+
+## Requirements
+ - Ruby 2.6.5
+ - Rspec
+
+## Running app
+```bash
+./appointdent.rb
+```
+
+or
+```bash
+ruby appointdent.rb
+```
+
+## Running specs
+```bash
+bundle exec rspec spec
+```
+
+# Software Engineering exercise
 
 ## Hello you!
 
-The goal of this excercise is to demonstrate and evaluate
+The goal of this exercise is to demonstrate and evaluate
 
 - your coding proficiency
 - how you organize your work
@@ -10,7 +32,7 @@ The goal of this excercise is to demonstrate and evaluate
 
 It also gives us something to talk about at the next stage of the hiring process.
 
-You should have about 2-4 hours to do the excercise on your own time. If possible, submit your results within a week. You can spend less time, you can spend more time. Up to you.
+You should have about 2-4 hours to do the exercise on your own time. If possible, submit your results within a week. You can spend less time, you can spend more time. Up to you.
 
 Once you're done, package your results however you want and send them to us (Hint: Git is a valuable tool to us)
 
@@ -18,7 +40,7 @@ Once you're done, package your results however you want and send them to us (Hin
 
 This is an example of a task we recently encountered while working on a feature at Denteo.
 
-Dentists like to keep their daily schedules tighly packed. They start working at 08:00 and stop working at 18:00, with a 1h lunchbreak from 12:00-13:00.
+Dentists like to keep their daily schedules tightly packed. They start working at 08:00 and stop working at 18:00, with a 1h lunchbreak from 12:00-13:00.
 We want to let patients self-select a convenient time for their next dentist appointment, so we first have to figure out all times when the dentist is available.
 Finally, we want to display possible appointment times in convenient 30 minute blocks.
 
@@ -65,4 +87,4 @@ You are free to adapt this example however you think makes sense:
 - ... or deploy a website, push a docker container, send a shell script, link a Codepen or come up with something we wouldn't think of.
 
 Send us a link to your results within a week and we'll get back to you asap!
-This should be a fun excercise, hopefully! If you think it isn't, we are open to feedback and will adapt if necessary.
+This should be a fun exercise, hopefully! If you think it isn't, we are open to feedback and will adapt if necessary.
