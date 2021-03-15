@@ -21,7 +21,7 @@ class AppointmentsService
 
     def weekly_appointments
       grouped_by_date.map do |date, appointments|
-        DailyAppointments.new(date, appointments)
+        Appointments.new(date, appointments)
       end
     end
 

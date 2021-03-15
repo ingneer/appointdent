@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DailyAppointments
+class Appointments
   attr_reader :date, :appointments_array
 
   def initialize(date, appointments_array)
